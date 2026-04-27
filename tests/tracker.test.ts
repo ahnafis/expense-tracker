@@ -1,15 +1,15 @@
+import type { Transaction } from "@/features/tracker/entities";
 import { describe, expect, test } from "vitest";
 import { InMemoryTransactionStorage } from "./in-memory-db";
-import { Transaction } from "@/features/tracker/entities";
 
-describe("Testing DB", () => {
+describe("Testing storage functions with InMemoryTransactionStorage", () => {
     const storage = new InMemoryTransactionStorage([]);
 
     let mock_expense_1: Transaction;
     let mock_expense_2: Transaction;
     let mock_expense_3: Transaction;
 
-    test("Should add an Expense to the DB", async () => {
+    test("Should add an expense record to the DB", async () => {
         mock_expense_1 = await storage.add({
             occurred_at: Date.now(),
             amount: 40,
@@ -35,12 +35,12 @@ describe("Testing DB", () => {
         ]);
     });
 
-    test("Should filter expenses out", async () => {
+    test("Should filter records out", async () => {
         const result = await storage.get({ note_query: "Food" });
         expect(result).toStrictEqual([mock_expense_1]);
     });
 
-    test("Should update an Expense in the DB", async () => {
+    test("Should update a record in the DB", async () => {
         mock_expense_1 = await storage.update(mock_expense_1.id, {
             note: "I love to eat aloooooot",
         });
@@ -56,7 +56,7 @@ describe("Testing DB", () => {
         ]);
     });
 
-    test("Should delete an Expense from the DB", async () => {
+    test("Should delete a record from the DB", async () => {
         await storage.delete(mock_expense_1.id);
 
         expect(await storage.get()).toStrictEqual([
