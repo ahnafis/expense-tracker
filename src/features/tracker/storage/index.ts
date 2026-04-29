@@ -1,6 +1,6 @@
 export type {
     TransactionFilter,
-    CreateTransactionInput,
-    UpdateTransactionInput,
+    TransactionRow,
+    TransactionPatch,
     TransactionStorage,
 } from "./transaction";

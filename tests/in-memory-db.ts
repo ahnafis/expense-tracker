@@ -3,48 +3,52 @@ import type { Transaction } from "@/features/tracker/entities";
 import type {
     TransactionStorage,
     TransactionFilter,
-    CreateTransactionInput,
-    UpdateTransactionInput,
+    TransactionPatch,
+    TransactionRow,
 } from "@/features/tracker/storage";
 
 import type { UniqueId } from "@/types";
-
-import { create_uid } from "@/utils";
 
 export class InMemoryTransactionStorage implements TransactionStorage {
     private transactions: Transaction[];
 
     constructor(data: Transaction[]) {
-        this.transactions = data;
+        this.transactions = structuredClone(data);
     }
 
-    public get = async (
-        filter?: Partial<TransactionFilter>,
-    ): Promise<Transaction[]> => {
+    public async get(filter?: TransactionFilter): Promise<Transaction[]> {
         let result = [...this.transactions];
 
-        if (!filter) return result;
+        if (!filter) {
+            return result.sort((a, b) => b.occurred_at - a.occurred_at);
+        }
 
-        if (filter.occurred_from) {
+        if (filter.kind !== undefined) {
+            result = result.filter(
+                transaction => transaction.kind === filter.kind,
+            );
+        }
+
+        if (filter.occurred_from !== undefined) {
             result = result.filter(
                 transaction => transaction.occurred_at >= filter.occurred_from!,
             );
         }
 
-        if (filter.occurred_until) {
+        if (filter.occurred_until !== undefined) {
             result = result.filter(
                 transaction =>
                     transaction.occurred_at <= filter.occurred_until!,
             );
         }
 
-        if (filter.min_amount) {
+        if (filter.min_amount !== undefined) {
             result = result.filter(
                 transaction => transaction.amount >= filter.min_amount!,
             );
         }
 
-        if (filter.max_amount) {
+        if (filter.max_amount !== undefined) {
             result = result.filter(
                 transaction => transaction.amount <= filter.max_amount!,
             );
@@ -58,43 +62,50 @@ export class InMemoryTransactionStorage implements TransactionStorage {
             );
         }
 
-        return result;
-    };
+        return result.sort((a, b) => b.occurred_at - a.occurred_at);
+    }
 
-    public add = async (data: CreateTransactionInput): Promise<Transaction> => {
-        const transaction: Transaction = {
-            id: create_uid(),
-            created_at: Date.now(),
-            ...data,
-        };
+    public async getById(id: UniqueId): Promise<Transaction | undefined> {
+        return this.transactions.find(transaction => transaction.id === id);
+    }
 
-        this.transactions.push(transaction);
-        return transaction;
-    };
+    public async add(data: TransactionRow): Promise<Transaction> {
+        if (data.amount <= 0) {
+            throw new Error("Amount must be positive.");
+        }
 
-    public update = async (
+        this.transactions.push(data);
+        return data;
+    }
+
+    public async update(
         id: UniqueId,
-        data: UpdateTransactionInput,
-    ): Promise<Transaction> => {
+        patch: TransactionPatch,
+    ): Promise<Transaction> {
+        if (patch.amount !== undefined && patch.amount <= 0) {
+            throw new Error("Amount must be positive.");
+        }
+
         const index = this.transactions.findIndex(
             transaction => transaction.id === id,
         );
+
         const exists = index > -1;
 
         if (!exists) throw new Error("Not matches found. Nothing to update.");
 
         const updated = {
             ...this.transactions[index],
-            ...data,
-        };
+            ...patch,
+        } as Transaction;
 
         this.transactions[index] = updated;
         return updated;
-    };
+    }
 
-    public delete = async (id: UniqueId): Promise<void> => {
+    public async delete(id: UniqueId): Promise<void> {
         this.transactions = this.transactions.filter(
             transaction => transaction.id !== id,
         );
-    };
+    }
 }
