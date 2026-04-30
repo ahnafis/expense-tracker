@@ -1,3 +1,1 @@
-import TransactionService from "./transaction";
-
-export { TransactionService };
+export { TransactionService } from "./transaction";

@@ -1,15 +1,13 @@
-import type { TimeStamp, UniqueId } from "@/types";
-
-import type {
-    Transaction,
-    TransactionData,
-    TransactionKind,
-} from "../entities";
+import { TimeStamp, UniqueId } from "@/types";
+import { Transaction, TransactionKind } from "../entities";
 
 export type TransactionFilter = Partial<{
     id: UniqueId;
 
     kind: TransactionKind;
+
+    created_from: TimeStamp;
+    created_until: TimeStamp;
 
     occurred_from: TimeStamp;
     occurred_until: TimeStamp;
@@ -20,14 +18,11 @@ export type TransactionFilter = Partial<{
     note_query: string;
 }>;
 
-export type TransactionRow = Transaction;
-export type TransactionPatch = Partial<TransactionData>;
-
 export interface TransactionStorage {
-    get(filter?: TransactionFilter): Promise<Transaction[]>;
-    getById(id: UniqueId): Promise<Transaction | undefined>;
+    find(filter?: TransactionFilter): Promise<Transaction[]>;
+    findById(id: UniqueId): Promise<Transaction | undefined>;
 
-    add(data: TransactionRow): Promise<Transaction>;
-    update(id: UniqueId, patch: TransactionPatch): Promise<Transaction>;
+    insert(data: Transaction): Promise<Transaction>;
+    update(id: UniqueId, data: Transaction): Promise<Transaction>;
     delete(id: UniqueId): Promise<void>;
 }

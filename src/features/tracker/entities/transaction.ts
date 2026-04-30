@@ -1,12 +1,18 @@
-import type { Entity, TimeStamp } from "@/types";
+import { Entity, TimeStamp } from "@/types";
+
+export type TransactionBase = Entity & {
+    amount: number;
+    occurred_at: TimeStamp;
+    note?: string;
+};
 
 export enum TransactionKind {
-    INCOME = "income",
-    EXPENSE = "expense",
-    LEND = "lend",
-    BORROW = "borrow",
-    REPAY_IN = "repay_in",
-    REPAY_OUT = "repay_out",
+    INCOME,
+    EXPENSE,
+    LEND,
+    REPAY_IN,
+    BORROW,
+    REPAY_OUT,
 }
 
 export type Income = {
@@ -28,27 +34,19 @@ export type Transfer = {
     party?: string;
 };
 
-export type TransactionBase = {
-    amount: number;
-    occurred_at: TimeStamp;
-    note?: string;
-};
-
-export type TransactionData =
+export type Transaction =
     | (TransactionBase & Income)
     | (TransactionBase & Expense)
     | (TransactionBase & Transfer);
 
-export type Transaction = Entity & TransactionData;
-
 export class TransactionSummary {
     constructor(
-        public income: number = 0,
-        public expense: number = 0,
-        public lend: number = 0,
-        public borrow: number = 0,
-        public repay_in: number = 0,
-        public repay_out: number = 0,
-        public net: number = 0,
+        public income = 0,
+        public expense = 0,
+        public lend = 0,
+        public repay_in = 0,
+        public borrow = 0,
+        public repay_out = 0,
+        public net = 0,
     ) {}
 }

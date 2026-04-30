@@ -5,3 +5,5 @@ export type Entity = {
     id: UniqueId;
     created_at: TimeStamp;
 };
+
+export { AppError } from "./app-error";

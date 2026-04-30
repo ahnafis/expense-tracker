@@ -5,6 +5,12 @@ export {
     type Income,
     type Transaction,
     type TransactionBase,
-    type TransactionData,
     type Transfer,
 } from "./transaction";
+
+export {
+    InvalidAmount,
+    InvalidPropertyValue,
+    TransactionNotFound,
+    WriteError,
+} from "./errors";

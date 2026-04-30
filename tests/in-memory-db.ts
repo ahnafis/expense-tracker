@@ -1,10 +1,13 @@
-import type { Transaction } from "@/features/tracker/entities";
+import {
+    InvalidAmount,
+    WriteError,
+    type Transaction,
+} from "@/features/tracker/entities";
 
 import type {
     TransactionStorage,
     TransactionFilter,
-    TransactionPatch,
-    TransactionRow,
+    StorageTransactionPatch,
 } from "@/features/tracker/storage";
 
 import type { UniqueId } from "@/types";
@@ -16,7 +19,7 @@ export class InMemoryTransactionStorage implements TransactionStorage {
         this.transactions = structuredClone(data);
     }
 
-    public async get(filter?: TransactionFilter): Promise<Transaction[]> {
+    public async find(filter?: TransactionFilter): Promise<Transaction[]> {
         let result = [...this.transactions];
 
         if (!filter) {
@@ -65,13 +68,13 @@ export class InMemoryTransactionStorage implements TransactionStorage {
         return result.sort((a, b) => b.occurred_at - a.occurred_at);
     }
 
-    public async getById(id: UniqueId): Promise<Transaction | undefined> {
+    public async findById(id: UniqueId): Promise<Transaction | undefined> {
         return this.transactions.find(transaction => transaction.id === id);
     }
 
-    public async add(data: TransactionRow): Promise<Transaction> {
+    public async insert(data: Transaction): Promise<Transaction> {
         if (data.amount <= 0) {
-            throw new Error("Amount must be positive.");
+            throw new InvalidAmount("Amount must be positive.");
         }
 
         this.transactions.push(data);
@@ -80,10 +83,10 @@ export class InMemoryTransactionStorage implements TransactionStorage {
 
     public async update(
         id: UniqueId,
-        patch: TransactionPatch,
+        patch: StorageTransactionPatch,
     ): Promise<Transaction> {
         if (patch.amount !== undefined && patch.amount <= 0) {
-            throw new Error("Amount must be positive.");
+            throw new InvalidAmount("Amount must be positive.");
         }
 
         const index = this.transactions.findIndex(
@@ -92,7 +95,8 @@ export class InMemoryTransactionStorage implements TransactionStorage {
 
         const exists = index > -1;
 
-        if (!exists) throw new Error("Not matches found. Nothing to update.");
+        if (!exists)
+            throw new WriteError("Not matches found. Nothing to update.");
 
         const updated = {
             ...this.transactions[index],
