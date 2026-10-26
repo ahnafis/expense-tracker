@@ -1,6 +1,9 @@
 node_modules
 *.env*
 
+# Run time
+.expo
+
 # Build files
 dist
 *.tsbuildinfo

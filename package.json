@@ -1,34 +1,33 @@
 {
     "name": "expense-tracker",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "A simple tool to manage your expenses.",
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
     "type": "module",
-    "private": true,
-    "engines": {
-        "node": ">=22"
-    },
     "scripts": {
         "lint": "eslint",
-        "test": "vitest --run",
-        "watch-test": "vitest",
-        "dev": "vite",
-        "build": "tsc -b && vite build",
-        "preview": "vite preview"
+        "test": "pnpm -r --if-present test",
+        "start": "pnpm --filter @apps/mobile start",
+        "android": "pnpm --filter @apps/mobile android",
+        "ios": "pnpm --filter @apps/mobile ios"
     },
-    "keywords": [],
-    "author": "Ahnaf Al Nafis",
-    "license": "MIT",
-    "packageManager": "pnpm@10.28.2",
+    "engines": {
+        "node": ">=24.22.1"
+    },
+    "devEngines": {
+        "packageManager": {
+            "name": "pnpm",
+            "version": "12.15.0",
+            "onFail": "download"
+        }
+    },
+    "packageManager": "pnpm@12.15.0",
     "devDependencies": {
         "@eslint/js": "^10.0.1",
-        "@types/node": "^25.3.0",
-        "eslint": "^10.0.2",
-        "globals": "^17.3.0",
-        "prettier": "^3.8.1",
-        "typescript": "^5.9.3",
-        "typescript-eslint": "^8.56.1",
-        "vite": "^7.3.1",
-        "vite-tsconfig-paths": "^6.1.1",
-        "vitest": "^4.0.18"
+        "eslint": "^10.13.0",
+        "globals": "^17.13.0",
+        "typescript-eslint": "^8.72.0"
     }
 }

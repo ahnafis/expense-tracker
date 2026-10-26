@@ -1,12 +1,12 @@
 import * as vite from "vite";
 import * as vitest from "vitest/config";
 
-import tsconfigPaths from "vite-tsconfig-paths";
-
 const vite_config = vite.defineConfig({
     server: { port: 1100 },
     preview: { port: 1101 },
-    plugins: [tsconfigPaths()],
+    resolve: {
+        tsconfigPaths: true,
+    },
 });
 
 const vitest_config = vitest.defineConfig({

@@ -6,4 +6,4 @@ export type Entity = {
     created_at: TimeStamp;
 };
 
-export { AppError } from "./app-error";
+export * from "./app-error";

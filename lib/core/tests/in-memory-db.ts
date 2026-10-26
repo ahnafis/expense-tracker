@@ -1,16 +1,13 @@
+import type { UniqueId } from "@/types";
+
 import {
     InvalidAmount,
     WriteError,
     type Transaction,
-} from "@/features/tracker/entities";
-
-import type {
-    TransactionStorage,
-    TransactionFilter,
-    StorageTransactionPatch,
-} from "@/features/tracker/storage";
-
-import type { UniqueId } from "@/types";
+    type TransactionFilter,
+    type TransactionInputData,
+    type TransactionStorage,
+} from "@/features/tracker";
 
 export class InMemoryTransactionStorage implements TransactionStorage {
     private transactions: Transaction[];
@@ -83,7 +80,7 @@ export class InMemoryTransactionStorage implements TransactionStorage {
 
     public async update(
         id: UniqueId,
-        patch: StorageTransactionPatch,
+        patch: TransactionInputData,
     ): Promise<Transaction> {
         if (patch.amount !== undefined && patch.amount <= 0) {
             throw new InvalidAmount("Amount must be positive.");

@@ -1,5 +1,5 @@
-import { TimeStamp, UniqueId } from "@/types";
-import { Transaction, TransactionKind } from "../entities";
+import type { TimeStamp, UniqueId } from "@/types";
+import type { Transaction, TransactionKind } from "../entities";
 
 export type TransactionFilter = Partial<{
     id: UniqueId;

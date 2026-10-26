@@ -1,4 +1,4 @@
-import { Entity, TimeStamp } from "@/types";
+import type { Entity, TimeStamp } from "@/types";
 
 export type TransactionBase = Entity & {
     amount: number;

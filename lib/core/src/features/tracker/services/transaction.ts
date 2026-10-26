@@ -1,18 +1,18 @@
-import { UniqueId } from "@/types";
+import type { UniqueId } from "@/types";
 import { create_uid } from "@/utils";
 
 import {
-    Expense,
-    Income,
+    type Expense,
+    type Income,
     InvalidAmount,
-    Transaction,
+    type Transaction,
     TransactionKind,
     TransactionNotFound,
     TransactionSummary,
-    Transfer,
+    type Transfer,
 } from "../entities";
 
-import { TransactionFilter, TransactionStorage } from "../storage";
+import type { TransactionFilter, TransactionStorage } from "../storage";
 
 type TransactionInputBase = {
     amount: number;
@@ -20,7 +20,7 @@ type TransactionInputBase = {
     note?: string;
 };
 
-type TransactionInputData =
+export type TransactionInputData =
     | (TransactionInputBase & Income)
     | (TransactionInputBase & Expense)
     | (TransactionInputBase & Transfer);

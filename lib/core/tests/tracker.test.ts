@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, test } from "vitest";
 
-import { TransactionKind, type Transaction } from "@/features/tracker/entities";
-import { TransactionService } from "@/features/tracker/services";
+import {
+    TransactionKind,
+    TransactionService,
+    type Transaction,
+} from "@/features/tracker";
 
 import { InMemoryTransactionStorage } from "./in-memory-db";
 
