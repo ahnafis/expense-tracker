@@ -1,11 +1,8 @@
 import type { UniqueId } from "@/types";
 
 import {
-    InvalidAmount,
-    WriteError,
     type Transaction,
     type TransactionFilter,
-    type TransactionInputData,
     type TransactionStorage,
 } from "@/features/tracker";
 
@@ -16,92 +13,96 @@ export class InMemoryTransactionStorage implements TransactionStorage {
         this.transactions = structuredClone(data);
     }
 
+    public async findById(id: UniqueId): Promise<Transaction | undefined> {
+        return this.transactions.find(transaction => transaction.id === id);
+    }
+
     public async find(filter?: TransactionFilter): Promise<Transaction[]> {
         let result = [...this.transactions];
 
-        if (!filter) {
-            return result.sort((a, b) => b.occurred_at - a.occurred_at);
+        const {
+            id,
+            kind,
+            created_from,
+            created_until,
+            occurred_from,
+            occurred_until,
+            min_amount,
+            max_amount,
+            note_query,
+        } = filter ?? {};
+
+        if (id !== undefined) {
+            result = result.filter(transaction => transaction.id === id);
         }
 
-        if (filter.kind !== undefined) {
+        if (kind !== undefined) {
+            result = result.filter(transaction => transaction.kind === kind);
+        }
+
+        if (created_from !== undefined) {
             result = result.filter(
-                transaction => transaction.kind === filter.kind,
+                transaction => transaction.created_at >= created_from,
             );
         }
 
-        if (filter.occurred_from !== undefined) {
+        if (created_until !== undefined) {
             result = result.filter(
-                transaction => transaction.occurred_at >= filter.occurred_from!,
+                transaction => transaction.created_at <= created_until,
             );
         }
 
-        if (filter.occurred_until !== undefined) {
+        if (occurred_from !== undefined) {
             result = result.filter(
-                transaction =>
-                    transaction.occurred_at <= filter.occurred_until!,
+                transaction => transaction.occurred_at >= occurred_from,
             );
         }
 
-        if (filter.min_amount !== undefined) {
+        if (occurred_until !== undefined) {
             result = result.filter(
-                transaction => transaction.amount >= filter.min_amount!,
+                transaction => transaction.occurred_at <= occurred_until,
             );
         }
 
-        if (filter.max_amount !== undefined) {
+        if (min_amount !== undefined) {
             result = result.filter(
-                transaction => transaction.amount <= filter.max_amount!,
+                transaction => transaction.amount >= min_amount,
             );
         }
 
-        if (filter.note_query) {
-            const query = filter.note_query.toLowerCase();
+        if (max_amount !== undefined) {
+            result = result.filter(
+                transaction => transaction.amount <= max_amount,
+            );
+        }
+
+        if (note_query) {
+            const query = note_query.toLowerCase();
 
             result = result.filter(transaction =>
                 transaction.note?.toLowerCase().includes(query),
             );
         }
 
-        return result.sort((a, b) => b.occurred_at - a.occurred_at);
+        return result.toSorted((a, b) => b.occurred_at - a.occurred_at);
     }
 
-    public async findById(id: UniqueId): Promise<Transaction | undefined> {
-        return this.transactions.find(transaction => transaction.id === id);
+    public async insert(transaction: Transaction): Promise<Transaction> {
+        this.transactions.push(transaction);
+        return transaction;
     }
 
-    public async insert(data: Transaction): Promise<Transaction> {
-        if (data.amount <= 0) {
-            throw new InvalidAmount("Amount must be positive.");
-        }
-
-        this.transactions.push(data);
-        return data;
-    }
-
-    public async update(
-        id: UniqueId,
-        patch: TransactionInputData,
-    ): Promise<Transaction> {
-        if (patch.amount !== undefined && patch.amount <= 0) {
-            throw new InvalidAmount("Amount must be positive.");
-        }
-
+    public async update(patched_data: Transaction): Promise<Transaction> {
         const index = this.transactions.findIndex(
-            transaction => transaction.id === id,
+            transaction => transaction.id === patched_data.id,
         );
 
-        const exists = index > -1;
+        if (index === -1) {
+            throw new Error("Transaction not found.");
+        }
 
-        if (!exists)
-            throw new WriteError("Not matches found. Nothing to update.");
-
-        const updated = {
-            ...this.transactions[index],
-            ...patch,
-        } as Transaction;
-
-        this.transactions[index] = updated;
-        return updated;
+        this.transactions[index] = structuredClone(patched_data);
+        return this.transactions[index];
     }
 
     public async delete(id: UniqueId): Promise<void> {

@@ -97,7 +97,22 @@ describe("Testing storage functions with InMemoryTransactionStorage", () => {
         const transactions = await service.listTransactions();
 
         expect(transactions.length).toStrictEqual(6);
-        expect(transactions).toStrictEqual(MOCK_TRANSACTIONS.reverse());
+        expect(transactions).toStrictEqual(MOCK_TRANSACTIONS.toReversed());
+    });
+
+    test("Should list all the transactions if no filters passed", async () => {
+        const transactions = await service.listTransactions();
+
+        expect(transactions.length).toStrictEqual(6);
+        expect(transactions).toStrictEqual(MOCK_TRANSACTIONS.toReversed());
+    });
+
+    test("Should list a specific transaction", async () => {
+        const transactions = await service.listTransactions({
+            occurred_from: 3000,
+        });
+
+        expect(transactions.length).toStrictEqual(4);
     });
 
     test("Should create a new transaction", async () => {
@@ -119,13 +134,14 @@ describe("Testing storage functions with InMemoryTransactionStorage", () => {
     });
 
     test("Should update a transactions", async () => {
-        const updated = await service.updateTransaction(2, {
-            note: "I love chips",
+        const new_note = "I love chips";
+        await service.updateTransaction(2, {
+            note: new_note,
         });
 
         const transaction = await service.getTransactionById(2);
 
-        expect(transaction).toStrictEqual(updated);
+        expect(transaction?.note).toStrictEqual(new_note);
     });
 
     test("Should delete a transaction", async () => {

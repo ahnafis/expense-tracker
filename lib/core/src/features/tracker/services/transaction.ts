@@ -1,29 +1,40 @@
-import type { UniqueId } from "@/types";
-import { create_uid } from "@/utils";
+import type { TimeStamp, UniqueId } from "@/types";
 
 import {
-    type Expense,
-    type Income,
     InvalidAmount,
+    InvalidTransaction,
+    type MakeTransaction,
     type Transaction,
     TransactionKind,
     TransactionNotFound,
     TransactionSummary,
-    type Transfer,
 } from "../entities";
 
+import { create_uid } from "@/utils";
 import type { TransactionFilter, TransactionStorage } from "../storage";
 
 type TransactionInputBase = {
     amount: number;
-    occurred_at?: number;
+    occurred_at?: TimeStamp;
     note?: string;
 };
 
-export type TransactionInputData =
-    | (TransactionInputBase & Income)
-    | (TransactionInputBase & Expense)
-    | (TransactionInputBase & Transfer);
+type TransactionInput = MakeTransaction<TransactionInputBase>;
+type TransactionPatch = Partial<TransactionInputBase>;
+
+interface TransactionServiceInterface {
+    getBalance(): Promise<number>;
+    getSummary(): Promise<TransactionSummary>;
+
+    listTransactions(filter?: TransactionFilter): Promise<Transaction[]>;
+
+    createTransaction(data: TransactionInput): Promise<Transaction>;
+    updateTransaction(
+        id: UniqueId,
+        patch: TransactionPatch,
+    ): Promise<Transaction>;
+    deleteTransaction(id: UniqueId): Promise<void>;
+}
 
 function getSignedAmount(transaction: Transaction): number {
     switch (transaction.kind) {
@@ -39,7 +50,7 @@ function getSignedAmount(transaction: Transaction): number {
     }
 }
 
-function validateTransaction(data: TransactionInputData): void {
+function validateTransaction(data: TransactionInput): void {
     if (data.amount <= 0) {
         throw new InvalidAmount("Amount must be positive");
     }
@@ -47,13 +58,13 @@ function validateTransaction(data: TransactionInputData): void {
     switch (data.kind) {
         case TransactionKind.EXPENSE:
             if (!data.category) {
-                throw new Error("Expense requires category");
+                throw new InvalidTransaction("Expense requires category");
             }
             break;
 
         case TransactionKind.INCOME:
             if (!data.source) {
-                throw new Error("Income requires source");
+                throw new InvalidTransaction("Income requires source");
             }
             break;
 
@@ -62,13 +73,13 @@ function validateTransaction(data: TransactionInputData): void {
         case TransactionKind.BORROW:
         case TransactionKind.REPAY_OUT:
             if (!data.party) {
-                throw new Error("Transfer requires party");
+                throw new InvalidTransaction("Transfer requires party");
             }
             break;
     }
 }
 
-export class TransactionService {
+export class TransactionService implements TransactionServiceInterface {
     constructor(private storage: TransactionStorage) {}
 
     public async getBalance(): Promise<number> {
@@ -125,34 +136,41 @@ export class TransactionService {
     }
 
     public async createTransaction(
-        data: TransactionInputData,
+        data: TransactionInput,
     ): Promise<Transaction> {
-        const normalized = {
-            id: create_uid(),
-            created_at: Date.now(),
-            ...data,
-            occurred_at: data.occurred_at ?? Date.now(),
-        } as Transaction;
+        const now = Date.now();
 
-        validateTransaction(normalized);
-        return await this.storage.insert(normalized);
+        const transaction: Transaction = {
+            ...data,
+            id: create_uid(),
+            created_at: now,
+            occurred_at: data.occurred_at ?? now,
+            note: data.note ?? "",
+        };
+
+        validateTransaction(transaction);
+        return await this.storage.insert(transaction);
     }
 
     public async updateTransaction(
         id: UniqueId,
-        patch: TransactionInputData,
+        patch: TransactionPatch,
     ): Promise<Transaction> {
-        const transactions = await this.storage.find();
-        const current = transactions.find(tx => tx.id === id);
+        const current = await this.storage.findById(id);
 
         if (!current) {
-            throw new TransactionNotFound("Transaction not found");
+            throw new TransactionNotFound(`Transaction ${id} was not found`);
         }
 
-        const updated = { ...current, ...patch } as Transaction;
+        const updated: Transaction = {
+            ...current,
+            amount: patch.amount ?? current.amount,
+            occurred_at: patch.occurred_at ?? current.occurred_at,
+            note: patch.note ?? current.note,
+        };
 
         validateTransaction(updated);
-        return await this.storage.update(id, updated);
+        return await this.storage.update(updated);
     }
 
     public async deleteTransaction(id: UniqueId): Promise<void> {

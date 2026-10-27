@@ -1,5 +1,5 @@
 import type { TimeStamp, UniqueId } from "@/types";
-import type { Transaction, TransactionKind } from "../entities";
+import { TransactionKind, type Transaction } from "../entities";
 
 export type TransactionFilter = Partial<{
     id: UniqueId;
@@ -23,6 +23,6 @@ export interface TransactionStorage {
     findById(id: UniqueId): Promise<Transaction | undefined>;
 
     insert(data: Transaction): Promise<Transaction>;
-    update(id: UniqueId, data: Transaction): Promise<Transaction>;
+    update(patched_data: Transaction): Promise<Transaction>;
     delete(id: UniqueId): Promise<void>;
 }

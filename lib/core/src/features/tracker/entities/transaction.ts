@@ -1,43 +1,45 @@
 import type { Entity, TimeStamp } from "@/types";
 
-export type TransactionBase = Entity & {
+export type TransactionBase = {
     amount: number;
     occurred_at: TimeStamp;
-    note?: string;
+    note: string;
 };
 
 export enum TransactionKind {
-    INCOME,
-    EXPENSE,
-    LEND,
-    REPAY_IN,
-    BORROW,
-    REPAY_OUT,
+    INCOME = "income",
+    EXPENSE = "expense",
+    LEND = "lend",
+    REPAY_IN = "repay_in",
+    BORROW = "borrow",
+    REPAY_OUT = "repay_out",
 }
 
-export type Income = {
+type Income = {
     kind: TransactionKind.INCOME;
     source: string;
 };
 
-export type Expense = {
+type Expense = {
     kind: TransactionKind.EXPENSE;
     category: string;
 };
 
-export type Transfer = {
+type Transfer = {
     kind:
         | TransactionKind.LEND
         | TransactionKind.REPAY_IN
         | TransactionKind.BORROW
         | TransactionKind.REPAY_OUT;
-    party?: string;
+    party: string;
 };
 
-export type Transaction =
-    | (TransactionBase & Income)
-    | (TransactionBase & Expense)
-    | (TransactionBase & Transfer);
+export type MakeTransaction<Base> =
+    | (Base & Income)
+    | (Base & Expense)
+    | (Base & Transfer);
+
+export type Transaction = MakeTransaction<Entity & TransactionBase>;
 
 export class TransactionSummary {
     constructor(
