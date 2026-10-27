@@ -9,6 +9,7 @@
     "scripts": {
         "lint": "eslint",
         "test": "pnpm -r --if-present test",
+        "watch-tests": "pnpm -r --if-present watch-tests",
         "start": "pnpm --filter @apps/mobile start",
         "android": "pnpm --filter @apps/mobile android",
         "ios": "pnpm --filter @apps/mobile ios"
