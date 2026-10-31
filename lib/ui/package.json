@@ -1,0 +1,17 @@
+{
+    "name": "@lib/ui",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "typecheck": "tsc -p tsconfig.json"
+    },
+    "dependencies": {
+        "react": "19.2.3",
+        "react-native": "0.86.3"
+    },
+    "devDependencies": {
+        "@types/react": "~19.2.2",
+        "typescript": "~6.0.3"
+    }
+}

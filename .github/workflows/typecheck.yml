@@ -1,0 +1,26 @@
+name: Type checking
+
+on:
+    push:
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    typecheck:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v7
+
+            - name: Setup pnpm and Node.js
+              uses: pnpm/setup@v3
+              with:
+                  cache: true
+
+            - name: Run builds
+              run: pnpm run build
+
+            - name: Run Linting
+              run: pnpm run typecheck

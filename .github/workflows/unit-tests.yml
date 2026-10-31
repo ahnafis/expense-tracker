@@ -19,5 +19,5 @@ jobs:
               with:
                   cache: true
 
-            - name: Run tests
+            - name: Run Tests
               run: pnpm run test

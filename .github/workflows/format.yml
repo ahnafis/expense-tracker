@@ -19,5 +19,5 @@ jobs:
               with:
                   cache: true
 
-            - name: Run Linting
+            - name: Run Formatting
               run: pnpm run format-check
