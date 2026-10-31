@@ -1,0 +1,23 @@
+name: Formatting
+
+on:
+    push:
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    format:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v7
+
+            - name: Setup pnpm and Node.js
+              uses: pnpm/setup@v3
+              with:
+                  cache: true
+
+            - name: Run Linting
+              run: pnpm run format-check

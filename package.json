@@ -7,6 +7,7 @@
     "license": "MIT",
     "type": "module",
     "scripts": {
+        "format-check": "prettier --check .",
         "lint": "eslint",
         "test": "pnpm -r --if-present test",
         "watch-tests": "pnpm -r --if-present watch-tests",
@@ -14,10 +15,12 @@
         "android": "pnpm --filter @apps/mobile android",
         "ios": "pnpm --filter @apps/mobile ios"
     },
-    "engines": {
-        "node": ">=24.22.1"
-    },
     "devEngines": {
+        "runtime": {
+            "name": "node",
+            "version": "24.22.1",
+            "onFail": "download"
+        },
         "packageManager": {
             "name": "pnpm",
             "version": "12.15.0",
@@ -29,6 +32,7 @@
         "@eslint/js": "^10.0.1",
         "eslint": "^10.13.0",
         "globals": "^17.13.0",
+        "prettier": "^3.9.10",
         "typescript-eslint": "^8.72.0"
     }
 }
