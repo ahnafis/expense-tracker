@@ -1,10 +1,4 @@
-import type { Entity, TimeStamp } from "@/types";
-
-export type TransactionBase = {
-    amount: number;
-    occurred_at: TimeStamp;
-    note: string;
-};
+import type { Entity, TimeStamp, UniqueId } from "@/types";
 
 export enum TransactionKind {
     INCOME = "income",
@@ -15,40 +9,26 @@ export enum TransactionKind {
     REPAY_OUT = "repay_out",
 }
 
-type Income = {
-    kind: TransactionKind.INCOME;
-    source: string;
+export type Transaction = Entity & {
+    amount: number;
+    kind: TransactionKind;
+    occurred_at: TimeStamp;
+    note: string;
 };
 
-type Expense = {
-    kind: TransactionKind.EXPENSE;
-    category: string;
-};
+export type TransactionFilter = Partial<{
+    id: UniqueId;
 
-type Transfer = {
-    kind:
-        | TransactionKind.LEND
-        | TransactionKind.REPAY_IN
-        | TransactionKind.BORROW
-        | TransactionKind.REPAY_OUT;
-    party: string;
-};
+    kind: TransactionKind;
 
-export type MakeTransaction<Base> =
-    | (Base & Income)
-    | (Base & Expense)
-    | (Base & Transfer);
+    created_from: TimeStamp;
+    created_until: TimeStamp;
 
-export type Transaction = MakeTransaction<Entity & TransactionBase>;
+    occurred_from: TimeStamp;
+    occurred_until: TimeStamp;
 
-export class TransactionSummary {
-    constructor(
-        public income = 0,
-        public expense = 0,
-        public lend = 0,
-        public repay_in = 0,
-        public borrow = 0,
-        public repay_out = 0,
-        public net = 0,
-    ) {}
-}
+    min_amount: number;
+    max_amount: number;
+
+    note_query: string;
+}>;

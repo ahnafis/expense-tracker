@@ -1,32 +1,43 @@
-import type { TimeStamp, UniqueId } from "@/types";
-
 import {
     InvalidAmount,
-    InvalidTransaction,
-    type MakeTransaction,
     type Transaction,
+    type TransactionFilter,
     TransactionKind,
     TransactionNotFound,
-    TransactionSummary,
 } from "../entities";
 
-import { create_uid } from "@/utils";
-import type { TransactionFilter, TransactionStorage } from "../storage";
+import type { TransactionStorage } from "../storage";
 
-type TransactionInputBase = {
+import type { TimeStamp, UniqueId } from "@/types";
+import { create_uid } from "@/utils";
+
+type TransactionInput = {
     amount: number;
+    kind: TransactionKind;
     occurred_at?: TimeStamp;
     note?: string;
 };
 
-type TransactionInput = MakeTransaction<TransactionInputBase>;
-type TransactionPatch = Partial<TransactionInputBase>;
+type TransactionPatch = Partial<TransactionInput>;
+
+export class TransactionSummary {
+    constructor(
+        public income = 0,
+        public expense = 0,
+        public lend = 0,
+        public repay_in = 0,
+        public borrow = 0,
+        public repay_out = 0,
+        public net = 0,
+    ) {}
+}
 
 interface TransactionServiceInterface {
     getBalance(): Promise<number>;
     getSummary(): Promise<TransactionSummary>;
 
     listTransactions(filter?: TransactionFilter): Promise<Transaction[]>;
+    getTransactionById(id: UniqueId): Promise<Transaction | undefined>;
 
     createTransaction(data: TransactionInput): Promise<Transaction>;
     updateTransaction(
@@ -39,8 +50,8 @@ interface TransactionServiceInterface {
 function getSignedAmount(transaction: Transaction): number {
     switch (transaction.kind) {
         case TransactionKind.INCOME:
-        case TransactionKind.REPAY_IN:
         case TransactionKind.BORROW:
+        case TransactionKind.REPAY_IN:
             return transaction.amount;
 
         case TransactionKind.EXPENSE:
@@ -51,31 +62,8 @@ function getSignedAmount(transaction: Transaction): number {
 }
 
 function validateTransaction(data: TransactionInput): void {
-    if (data.amount <= 0) {
+    if (!Number.isFinite(data.amount) || data.amount <= 0) {
         throw new InvalidAmount("Amount must be positive");
-    }
-
-    switch (data.kind) {
-        case TransactionKind.EXPENSE:
-            if (!data.category) {
-                throw new InvalidTransaction("Expense requires category");
-            }
-            break;
-
-        case TransactionKind.INCOME:
-            if (!data.source) {
-                throw new InvalidTransaction("Income requires source");
-            }
-            break;
-
-        case TransactionKind.LEND:
-        case TransactionKind.REPAY_IN:
-        case TransactionKind.BORROW:
-        case TransactionKind.REPAY_OUT:
-            if (!data.party) {
-                throw new InvalidTransaction("Transfer requires party");
-            }
-            break;
     }
 }
 
@@ -123,16 +111,14 @@ export class TransactionService implements TransactionServiceInterface {
         return summary;
     }
 
-    public async listTransactions(
+    public listTransactions(
         filter?: TransactionFilter,
     ): Promise<Transaction[]> {
-        return await this.storage.find(filter);
+        return this.storage.find(filter);
     }
 
-    public async getTransactionById(
-        id: UniqueId,
-    ): Promise<Transaction | undefined> {
-        return await this.storage.findById(id);
+    public getTransactionById(id: UniqueId): Promise<Transaction | undefined> {
+        return this.storage.findById(id);
     }
 
     public async createTransaction(
@@ -141,9 +127,10 @@ export class TransactionService implements TransactionServiceInterface {
         const now = Date.now();
 
         const transaction: Transaction = {
-            ...data,
             id: create_uid(),
             created_at: now,
+            amount: data.amount,
+            kind: data.kind,
             occurred_at: data.occurred_at ?? now,
             note: data.note ?? "",
         };
@@ -162,18 +149,13 @@ export class TransactionService implements TransactionServiceInterface {
             throw new TransactionNotFound(`Transaction ${id} was not found`);
         }
 
-        const updated: Transaction = {
-            ...current,
-            amount: patch.amount ?? current.amount,
-            occurred_at: patch.occurred_at ?? current.occurred_at,
-            note: patch.note ?? current.note,
-        };
+        const updated: Transaction = { ...current, ...patch };
 
         validateTransaction(updated);
         return await this.storage.update(updated);
     }
 
-    public async deleteTransaction(id: UniqueId): Promise<void> {
-        await this.storage.delete(id);
+    public deleteTransaction(id: UniqueId): Promise<void> {
+        return this.storage.delete(id);
     }
 }

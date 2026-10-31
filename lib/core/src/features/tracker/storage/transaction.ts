@@ -1,28 +1,11 @@
-import type { TimeStamp, UniqueId } from "@/types";
-import { TransactionKind, type Transaction } from "../entities";
-
-export type TransactionFilter = Partial<{
-    id: UniqueId;
-
-    kind: TransactionKind;
-
-    created_from: TimeStamp;
-    created_until: TimeStamp;
-
-    occurred_from: TimeStamp;
-    occurred_until: TimeStamp;
-
-    min_amount: number;
-    max_amount: number;
-
-    note_query: string;
-}>;
+import type { UniqueId } from "@/types";
+import type { Transaction, TransactionFilter } from "../entities";
 
 export interface TransactionStorage {
     find(filter?: TransactionFilter): Promise<Transaction[]>;
     findById(id: UniqueId): Promise<Transaction | undefined>;
 
-    insert(data: Transaction): Promise<Transaction>;
-    update(patched_data: Transaction): Promise<Transaction>;
+    insert(transaction: Transaction): Promise<Transaction>;
+    update(transaction: Transaction): Promise<Transaction>;
     delete(id: UniqueId): Promise<void>;
 }

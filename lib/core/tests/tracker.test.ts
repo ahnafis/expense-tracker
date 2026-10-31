@@ -1,76 +1,16 @@
-import { beforeEach, describe, expect, test } from "vitest";
-
 import {
+    InvalidAmount,
     TransactionKind,
+    TransactionNotFound,
     TransactionService,
-    type Transaction,
 } from "@/features/tracker";
 
 import { InMemoryTransactionStorage } from "./in-memory-db";
 
-export const MOCK_TRANSACTIONS: Transaction[] = [
-    {
-        id: 1,
-        created_at: 1000,
-        occurred_at: 1000,
-        amount: 5000,
-        kind: TransactionKind.INCOME,
-        source: "Salary",
-        note: "Monthly salary",
-    },
+import { beforeEach, describe, expect, test } from "vitest";
+import { MOCK_TRANSACTIONS } from "./data";
 
-    {
-        id: 2,
-        created_at: 2000,
-        occurred_at: 2000,
-        amount: 1200,
-        kind: TransactionKind.EXPENSE,
-        category: "Food",
-        note: "Groceries",
-    },
-
-    {
-        id: 3,
-        created_at: 3000,
-        occurred_at: 3000,
-        amount: 800,
-        kind: TransactionKind.LEND,
-        party: "Rahim",
-        note: "Loan to friend",
-    },
-
-    {
-        id: 4,
-        created_at: 4000,
-        occurred_at: 4000,
-        amount: 1500,
-        kind: TransactionKind.BORROW,
-        party: "Karim",
-        note: "Borrowed cash",
-    },
-
-    {
-        id: 5,
-        created_at: 5000,
-        occurred_at: 5000,
-        amount: 300,
-        kind: TransactionKind.REPAY_IN,
-        party: "Rahim",
-        note: "Rahim paid back",
-    },
-
-    {
-        id: 6,
-        created_at: 6000,
-        occurred_at: 6000,
-        amount: 400,
-        kind: TransactionKind.REPAY_OUT,
-        party: "Karim",
-        note: "Paid back Karim",
-    },
-];
-
-describe("Testing storage functions with InMemoryTransactionStorage", () => {
+describe("TransactionService", () => {
     let storage: InMemoryTransactionStorage;
     let service: TransactionService;
 
@@ -82,6 +22,147 @@ describe("Testing storage functions with InMemoryTransactionStorage", () => {
         service = new TransactionService(storage);
     });
 
+    describe("Read", () => {
+        test("Should list all the transactions", async () => {
+            const transactions = await service.listTransactions();
+
+            expect(transactions).toHaveLength(6);
+            expect(transactions).toStrictEqual(MOCK_TRANSACTIONS.toReversed());
+        });
+
+        test("Should list a specific transaction", async () => {
+            const transactions = await service.listTransactions({
+                occurred_from: 3000,
+            });
+
+            expect(transactions.length).toStrictEqual(4);
+        });
+
+        test("Should return a transaction by ID", async () => {
+            const transaction = await service.getTransactionById(3);
+            expect(transaction).toStrictEqual(MOCK_TRANSACTIONS[2]);
+        });
+
+        test("Should return undefined for a nonexistent ID", async () => {
+            const transaction = await service.getTransactionById(999);
+            expect(transaction).toBeUndefined();
+        });
+    });
+
+    describe("Create", () => {
+        test("Should create a new transaction", async () => {
+            const transaction = await service.createTransaction({
+                amount: 20,
+                kind: TransactionKind.EXPENSE,
+            });
+
+            expect(transaction.amount).toStrictEqual(20);
+            expect(transaction.kind).toStrictEqual(TransactionKind.EXPENSE);
+            expect(transaction.note).toStrictEqual("");
+
+            const stored = await service.getTransactionById(transaction.id);
+            expect(stored).toStrictEqual(transaction);
+        });
+
+        test("Should generate ID and timestamps", async () => {
+            const before = Date.now();
+
+            const transaction = await service.createTransaction({
+                amount: 100,
+                kind: TransactionKind.INCOME,
+            });
+
+            const after = Date.now();
+
+            expect(transaction.id).toBeDefined();
+            expect(transaction.created_at).toBeGreaterThanOrEqual(before);
+            expect(transaction.created_at).toBeLessThanOrEqual(after);
+            expect(transaction.occurred_at).toStrictEqual(
+                transaction.created_at,
+            );
+        });
+
+        test.each([0, -1, NaN, Infinity, -Infinity])(
+            "Should reject invalid amount: %s",
+            async amount => {
+                await expect(
+                    service.createTransaction({
+                        amount,
+                        kind: TransactionKind.INCOME,
+                    }),
+                ).rejects.toThrow(InvalidAmount);
+            },
+        );
+
+        test("Should preserve a custom occurrence timestamp", async () => {
+            const occurred_at = 500;
+
+            const transaction = await service.createTransaction({
+                amount: 100,
+                kind: TransactionKind.INCOME,
+                occurred_at,
+            });
+
+            expect(transaction.occurred_at).toBe(occurred_at);
+            expect(transaction.created_at).not.toBe(occurred_at);
+        });
+    });
+
+    describe("Update", () => {
+        test("Should update a transaction without changing other fields", async () => {
+            const original = await service.getTransactionById(2);
+            const new_note = "I love chips";
+
+            const updated = await service.updateTransaction(2, {
+                note: new_note,
+            });
+
+            expect(updated.note).toBe(new_note);
+            expect(updated.amount).toBe(original?.amount);
+            expect(updated.kind).toBe(original?.kind);
+            expect(updated.occurred_at).toBe(original?.occurred_at);
+            expect(updated.created_at).toBe(original?.created_at);
+        });
+
+        test("Should update multiple fields", async () => {
+            const updated = await service.updateTransaction(2, {
+                amount: 2500,
+                kind: TransactionKind.INCOME,
+                note: "Updated transaction",
+            });
+
+            expect(updated.amount).toBe(2500);
+            expect(updated.kind).toBe(TransactionKind.INCOME);
+            expect(updated.note).toBe("Updated transaction");
+        });
+
+        test("Should reject updating a nonexistent transaction", async () => {
+            const updated = service.updateTransaction(999, {
+                note: "Nothing here",
+            });
+            await expect(updated).rejects.toThrow(TransactionNotFound);
+        });
+    });
+
+    describe("Delete", () => {
+        test("Should delete a transaction", async () => {
+            await service.deleteTransaction(6);
+
+            expect(await service.getTransactionById(6)).toBeUndefined();
+
+            const transactions = await service.listTransactions();
+            expect(transactions).toHaveLength(5);
+        });
+
+        test("Should silently ignore deletion of a nonexistent transaction", async () => {
+            await expect(
+                service.deleteTransaction(999),
+            ).resolves.toBeUndefined();
+
+            expect(await service.listTransactions()).toHaveLength(6);
+        });
+    });
+
     test("Should calculate total balance", async () => {
         expect(await service.getBalance()).toStrictEqual(4400);
     });
@@ -91,64 +172,6 @@ describe("Testing storage functions with InMemoryTransactionStorage", () => {
 
         expect(summary.net).toBe(4400);
         expect(summary.income).toBe(5000);
-    });
-
-    test("Should list all the transactions", async () => {
-        const transactions = await service.listTransactions();
-
-        expect(transactions.length).toStrictEqual(6);
-        expect(transactions).toStrictEqual(MOCK_TRANSACTIONS.toReversed());
-    });
-
-    test("Should list all the transactions if no filters passed", async () => {
-        const transactions = await service.listTransactions();
-
-        expect(transactions.length).toStrictEqual(6);
-        expect(transactions).toStrictEqual(MOCK_TRANSACTIONS.toReversed());
-    });
-
-    test("Should list a specific transaction", async () => {
-        const transactions = await service.listTransactions({
-            occurred_from: 3000,
-        });
-
-        expect(transactions.length).toStrictEqual(4);
-    });
-
-    test("Should create a new transaction", async () => {
-        await service.createTransaction({
-            amount: 20,
-            kind: TransactionKind.EXPENSE,
-            category: "Phone",
-        });
-    });
-
-    test("Should reject invalid amount", async () => {
-        const transaction = service.createTransaction({
-            amount: 0,
-            kind: TransactionKind.INCOME,
-            source: "Gift",
-        });
-
-        await expect(transaction).rejects.toThrow();
-    });
-
-    test("Should update a transactions", async () => {
-        const new_note = "I love chips";
-        await service.updateTransaction(2, {
-            note: new_note,
-        });
-
-        const transaction = await service.getTransactionById(2);
-
-        expect(transaction?.note).toStrictEqual(new_note);
-    });
-
-    test("Should delete a transaction", async () => {
-        await service.deleteTransaction(6);
-        const transactions = await service.listTransactions();
-
-        expect(transactions.length).toStrictEqual(5);
     });
 });
 

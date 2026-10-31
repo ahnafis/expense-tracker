@@ -14,7 +14,8 @@ export class InMemoryTransactionStorage implements TransactionStorage {
     }
 
     public async findById(id: UniqueId): Promise<Transaction | undefined> {
-        return this.transactions.find(transaction => transaction.id === id);
+        const transaction = this.transactions.find(item => item.id === id);
+        return transaction ? structuredClone(transaction) : undefined;
     }
 
     public async find(filter?: TransactionFilter): Promise<Transaction[]> {
@@ -84,25 +85,28 @@ export class InMemoryTransactionStorage implements TransactionStorage {
             );
         }
 
-        return result.toSorted((a, b) => b.occurred_at - a.occurred_at);
+        return result
+            .toSorted((a, b) => b.occurred_at - a.occurred_at)
+            .map(transaction => structuredClone(transaction));
     }
 
     public async insert(transaction: Transaction): Promise<Transaction> {
-        this.transactions.push(transaction);
-        return transaction;
+        const stored = structuredClone(transaction);
+        this.transactions.push(stored);
+        return structuredClone(stored);
     }
 
-    public async update(patched_data: Transaction): Promise<Transaction> {
+    public async update(transaction: Transaction): Promise<Transaction> {
         const index = this.transactions.findIndex(
-            transaction => transaction.id === patched_data.id,
+            item => item.id === transaction.id,
         );
 
         if (index === -1) {
             throw new Error("Transaction not found.");
         }
 
-        this.transactions[index] = structuredClone(patched_data);
-        return this.transactions[index];
+        this.transactions[index] = structuredClone(transaction);
+        return structuredClone(this.transactions[index]);
     }
 
     public async delete(id: UniqueId): Promise<void> {
