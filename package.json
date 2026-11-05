@@ -8,12 +8,12 @@
     "type": "module",
     "scripts": {
         "clean": "pnpm -r clean",
-        "dev": "pnpm -r --parallel --if-present dev",
+        "dev": "concurrently -kr \"pnpm --filter @lib/core dev\" \"pnpm --filter @apps/mobile dev\"",
         "test": "pnpm -r --if-present test",
         "watch-tests": "pnpm -r --if-present watch-tests",
         "build": "pnpm -r --if-present build",
         "typecheck": "pnpm build && pnpm -r typecheck",
-        "lint": "eslint",
+        "lint": "eslint .",
         "format": "prettier --write .",
         "format-check": "prettier --check ."
     },
