@@ -1,4 +1,4 @@
-import { InMemoryTransactionStorage } from "./in-memory-db";
+import { InMemoryTransactionStorage } from "@/utils";
 
 import { beforeEach, describe, expect, test } from "vitest";
 import { MOCK_TRANSACTIONS } from "./data";

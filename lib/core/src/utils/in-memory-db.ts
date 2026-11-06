@@ -9,7 +9,7 @@ import {
 export class InMemoryTransactionStorage implements TransactionStorage {
     private transactions: Transaction[];
 
-    constructor(data: Transaction[]) {
+    constructor(data: Transaction[] = []) {
         this.transactions = structuredClone(data);
     }
 
@@ -77,7 +77,7 @@ export class InMemoryTransactionStorage implements TransactionStorage {
             );
         }
 
-        if (note_query) {
+        if (note_query !== undefined && note_query.length > 0) {
             const query = note_query.toLowerCase();
 
             result = result.filter(transaction =>
@@ -91,8 +91,15 @@ export class InMemoryTransactionStorage implements TransactionStorage {
     }
 
     public async insert(transaction: Transaction): Promise<Transaction> {
+        if (this.transactions.some(item => item.id === transaction.id)) {
+            throw new Error(
+                `Transaction with ID ${transaction.id} already exists.`,
+            );
+        }
+
         const stored = structuredClone(transaction);
         this.transactions.push(stored);
+
         return structuredClone(stored);
     }
 

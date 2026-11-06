@@ -1,3 +1,2 @@
-import create_uid from "./uid";
-
-export { create_uid };
+export { create_uid } from "./uid";
+export { InMemoryTransactionStorage } from "./in-memory-db";
