@@ -6,16 +6,20 @@ import {
     type TransactionStorage,
 } from "@/features/tracker";
 
+function cloneTransaction(data: Transaction): Transaction {
+    return { ...data };
+}
+
 export class InMemoryTransactionStorage implements TransactionStorage {
     private transactions: Transaction[];
 
     constructor(data: Transaction[] = []) {
-        this.transactions = structuredClone(data);
+        this.transactions = [...data];
     }
 
     public async findById(id: UniqueId): Promise<Transaction | undefined> {
         const transaction = this.transactions.find(item => item.id === id);
-        return transaction ? structuredClone(transaction) : undefined;
+        return transaction ? cloneTransaction(transaction) : undefined;
     }
 
     public async find(filter?: TransactionFilter): Promise<Transaction[]> {
@@ -86,8 +90,8 @@ export class InMemoryTransactionStorage implements TransactionStorage {
         }
 
         return result
-            .toSorted((a, b) => b.occurred_at - a.occurred_at)
-            .map(transaction => structuredClone(transaction));
+            .sort((a, b) => b.occurred_at - a.occurred_at)
+            .map(cloneTransaction);
     }
 
     public async insert(transaction: Transaction): Promise<Transaction> {
@@ -97,10 +101,10 @@ export class InMemoryTransactionStorage implements TransactionStorage {
             );
         }
 
-        const stored = structuredClone(transaction);
+        const stored = cloneTransaction(transaction);
         this.transactions.push(stored);
 
-        return structuredClone(stored);
+        return cloneTransaction(stored);
     }
 
     public async update(transaction: Transaction): Promise<Transaction> {
@@ -112,8 +116,8 @@ export class InMemoryTransactionStorage implements TransactionStorage {
             throw new Error("Transaction not found.");
         }
 
-        this.transactions[index] = structuredClone(transaction);
-        return structuredClone(this.transactions[index]);
+        this.transactions[index] = cloneTransaction(transaction);
+        return cloneTransaction(this.transactions[index]);
     }
 
     public async delete(id: UniqueId): Promise<void> {

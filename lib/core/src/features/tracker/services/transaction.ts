@@ -9,7 +9,7 @@ import {
 import type { TransactionStorage } from "../storage";
 
 import type { TimeStamp, UniqueId } from "@/types";
-import { create_uid } from "@/utils";
+import { create_uid } from "@/utils/uid";
 
 type TransactionInput = {
     amount: number;
