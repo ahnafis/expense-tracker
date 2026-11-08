@@ -19,7 +19,9 @@
         "react-native-safe-area-context": "^5.11.0"
     },
     "devDependencies": {
+        "@types/culori": "^4.0.1",
         "@types/react": "~19.2.2",
+        "culori": "^4.0.2",
         "typescript": "~6.0.3"
     }
 }
