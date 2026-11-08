@@ -6,6 +6,9 @@ const config: ExpoConfig = {
     version: "1.0.0",
     orientation: "portrait",
     userInterfaceStyle: "automatic",
+    experiments: {
+        tsconfigPaths: true,
+    },
 };
 
 export default config;
