@@ -20,7 +20,7 @@ const CardText = (props: CardTextProps) => {
     };
 
     return (
-        <Typography {...props} style={style}>
+        <Typography {...props} style={[style, props.style]}>
             {props.children}
         </Typography>
     );
