@@ -5,7 +5,7 @@ import { TransactionProvider } from "@/features/tracker/providers";
 import { TrackerScreen } from "@/features/tracker/screens";
 import { sizes, ThemeProvider, useTheme } from "@/theme";
 
-const MainContent = () => {
+function MainContent() {
     const { colors } = useTheme();
     return (
         <TransactionProvider>
@@ -17,7 +17,7 @@ const MainContent = () => {
             </SafeAreaView>
         </TransactionProvider>
     );
-};
+}
 
 function App() {
     return (

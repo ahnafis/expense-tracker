@@ -1,6 +1,6 @@
 import { formatHex, formatHex8, parse } from "culori";
 
-const toHex = (color: string) => {
+function toHex(color: string) {
     const parsed = parse(color);
     if (!parsed) {
         throw new Error(`Invalid color: ${color}`);
@@ -10,7 +10,7 @@ const toHex = (color: string) => {
         return formatHex8(parsed);
     }
     return formatHex(parsed);
-};
+}
 
 type Colors = {
     background: string;

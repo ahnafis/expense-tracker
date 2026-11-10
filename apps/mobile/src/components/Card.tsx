@@ -12,7 +12,7 @@ import { Typography, type TypographyProps } from "./Typography";
 type CardTextProps = TypographyProps;
 type CardProps = ViewProps;
 
-const CardText = (props: CardTextProps) => {
+function CardText(props: CardTextProps) {
     const { colors } = useTheme();
 
     const style: TextStyle = {
@@ -24,9 +24,9 @@ const CardText = (props: CardTextProps) => {
             {props.children}
         </Typography>
     );
-};
+}
 
-const Card = (props: CardProps) => {
+function Card(props: CardProps) {
     const { colors } = useTheme();
 
     const style: ViewStyle = {
@@ -42,7 +42,7 @@ const Card = (props: CardProps) => {
             {props.children}
         </View>
     );
-};
+}
 
 export { Card, CardText };
 export type { CardProps, CardTextProps };

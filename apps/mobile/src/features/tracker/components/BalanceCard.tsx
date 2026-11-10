@@ -7,7 +7,7 @@ type BalanceCardProps = ViewProps & {
     data: number;
 };
 
-const BalanceCard = (props: BalanceCardProps) => {
+function BalanceCard(props: BalanceCardProps) {
     const { colors } = useTheme();
 
     return (
@@ -20,7 +20,7 @@ const BalanceCard = (props: BalanceCardProps) => {
             </Typography>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     card: {

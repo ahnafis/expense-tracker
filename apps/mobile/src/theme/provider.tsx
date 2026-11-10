@@ -13,15 +13,15 @@ type ThemeContextValue = {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const useTheme = () => {
+function useTheme() {
     const theme = useContext(ThemeContext);
     if (!theme) {
         throw new Error("Component must be within a theme provider");
     }
     return theme;
-};
+}
 
-const ThemeProvider = (props: { children: React.ReactNode }) => {
+function ThemeProvider(props: { children: React.ReactNode }) {
     const system_theme = useColorScheme();
     const [preference, setPreference] = useState<ThemePreference>("system");
 
@@ -36,6 +36,6 @@ const ThemeProvider = (props: { children: React.ReactNode }) => {
             {props.children}
         </ThemeContext.Provider>
     );
-};
+}
 
 export { ThemeProvider, useTheme };

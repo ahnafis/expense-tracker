@@ -6,7 +6,7 @@ type TypographyProps = TextProps & {
     size?: keyof typeof sizes.typography;
 };
 
-const Typography = (props: TypographyProps) => {
+function Typography(props: TypographyProps) {
     const { colors } = useTheme();
 
     return (
@@ -22,7 +22,7 @@ const Typography = (props: TypographyProps) => {
             {props.children}
         </Text>
     );
-};
+}
 
 export { Typography };
 export type { TypographyProps };

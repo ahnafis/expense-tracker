@@ -8,7 +8,7 @@ type TransactionListProps = {
     data: Transaction[];
 };
 
-const TransactionList = (props: TransactionListProps) => {
+function TransactionList(props: TransactionListProps) {
     return (
         <FlatList
             data={props.data}
@@ -16,7 +16,7 @@ const TransactionList = (props: TransactionListProps) => {
             keyExtractor={item => String(item.id)}
         />
     );
-};
+}
 
 export { TransactionList };
 export type { TransactionListProps };

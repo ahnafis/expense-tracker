@@ -5,7 +5,7 @@ import { sizes } from "@/theme";
 import { BalanceCard, TransactionList } from "../components";
 import { useTransactions } from "../providers";
 
-const TrackerScreen = () => {
+function TrackerScreen() {
     const { transactions, balance } = useTransactions();
 
     return (
@@ -14,7 +14,7 @@ const TrackerScreen = () => {
             <TransactionList data={transactions} />
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     screen: {

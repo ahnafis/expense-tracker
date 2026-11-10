@@ -33,7 +33,7 @@ const ServiceContext = createContext<TransactionService | null>(null);
 const StateContext = createContext<TransactionsContextValue | null>(null);
 
 // Hooks
-const useTransactionService = () => {
+function useTransactionService() {
     const service = useContext(ServiceContext);
 
     if (!service) {
@@ -43,9 +43,9 @@ const useTransactionService = () => {
     }
 
     return service;
-};
+}
 
-const useTransactions = () => {
+function useTransactions() {
     const state = useContext(StateContext);
 
     if (!state) {
@@ -55,22 +55,22 @@ const useTransactions = () => {
     }
 
     return state;
-};
+}
 
 // Provider components
 type ProviderProps = {
     children: React.ReactNode;
 };
 
-const TransactionServiceProvider = ({ children }: ProviderProps) => {
+function TransactionServiceProvider({ children }: ProviderProps) {
     return (
         <ServiceContext.Provider value={transaction_service}>
             {children}
         </ServiceContext.Provider>
     );
-};
+}
 
-const TransactionsProvider = ({ children }: ProviderProps) => {
+function TransactionsProvider({ children }: ProviderProps) {
     const service = useTransactionService();
 
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -115,12 +115,14 @@ const TransactionsProvider = ({ children }: ProviderProps) => {
             {children}
         </StateContext.Provider>
     );
-};
+}
 
-const TransactionProvider = ({ children }: ProviderProps) => (
-    <TransactionServiceProvider>
-        <TransactionsProvider>{children}</TransactionsProvider>
-    </TransactionServiceProvider>
-);
+function TransactionProvider({ children }: ProviderProps) {
+    return (
+        <TransactionServiceProvider>
+            <TransactionsProvider>{children}</TransactionsProvider>
+        </TransactionServiceProvider>
+    );
+}
 
 export { TransactionProvider, useTransactions, useTransactionService };

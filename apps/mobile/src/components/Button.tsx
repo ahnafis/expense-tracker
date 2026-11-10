@@ -8,7 +8,7 @@ type PrimaryButtonProps = PressableProps & {
     children: React.ReactNode;
 };
 
-const Button = (props: PrimaryButtonProps) => {
+function Button(props: PrimaryButtonProps) {
     const { colors } = useTheme();
 
     return (
@@ -26,7 +26,7 @@ const Button = (props: PrimaryButtonProps) => {
             </Typography>
         </Pressable>
     );
-};
+}
 
 const style = StyleSheet.create({
     button: {

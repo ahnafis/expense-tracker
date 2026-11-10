@@ -11,7 +11,7 @@ type TransactionRowProps = {
 
 type AmountSignType = "positive" | "negative";
 
-const getAmountSign = (transaction: Transaction): AmountSignType => {
+function getAmountSign(transaction: Transaction): AmountSignType {
     switch (transaction.kind) {
         case TransactionKind.INCOME:
         case TransactionKind.BORROW:
@@ -23,9 +23,9 @@ const getAmountSign = (transaction: Transaction): AmountSignType => {
         case TransactionKind.REPAY_OUT:
             return "negative";
     }
-};
+}
 
-const TransactionCard = (props: TransactionRowProps) => {
+function TransactionCard(props: TransactionRowProps) {
     const { colors } = useTheme();
 
     const sign = getAmountSign(props.item);
@@ -40,7 +40,7 @@ const TransactionCard = (props: TransactionRowProps) => {
             </CardText>
         </Card>
     );
-};
+}
 
 const styles = StyleSheet.create({
     transaction_card: {
