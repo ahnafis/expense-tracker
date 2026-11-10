@@ -12,7 +12,7 @@ const toHex = (color: string) => {
     return formatHex(parsed);
 };
 
-export type Colors = {
+type Colors = {
     background: string;
     foreground: string;
     card: string;
@@ -48,12 +48,12 @@ export type Colors = {
     negative: string;
 };
 
-export type ColorPalette = {
+type ColorPalette = {
     light: Colors;
     dark: Colors;
 };
 
-export const color_palette: ColorPalette = {
+const color_palette: ColorPalette = {
     light: {
         background: toHex("oklch(1 0 0)"),
         foreground: toHex("oklch(0.145 0 0)"),
@@ -126,7 +126,7 @@ export const color_palette: ColorPalette = {
     },
 } as const;
 
-export const sizes = {
+const sizes = {
     typography: {
         xs: 12,
         sm: 14,
@@ -154,3 +154,6 @@ export const sizes = {
         full: 9999,
     },
 } as const;
+
+export { color_palette, sizes };
+export type { ColorPalette, Colors };

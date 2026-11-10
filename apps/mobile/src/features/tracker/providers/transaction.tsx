@@ -33,7 +33,7 @@ const ServiceContext = createContext<TransactionService | null>(null);
 const StateContext = createContext<TransactionsContextValue | null>(null);
 
 // Hooks
-export const useTransactionService = () => {
+const useTransactionService = () => {
     const service = useContext(ServiceContext);
 
     if (!service) {
@@ -45,7 +45,7 @@ export const useTransactionService = () => {
     return service;
 };
 
-export const useTransactions = () => {
+const useTransactions = () => {
     const state = useContext(StateContext);
 
     if (!state) {
@@ -117,8 +117,10 @@ const TransactionsProvider = ({ children }: ProviderProps) => {
     );
 };
 
-export const TransactionProvider = ({ children }: ProviderProps) => (
+const TransactionProvider = ({ children }: ProviderProps) => (
     <TransactionServiceProvider>
         <TransactionsProvider>{children}</TransactionsProvider>
     </TransactionServiceProvider>
 );
+
+export { TransactionProvider, useTransactions, useTransactionService };

@@ -1,3 +1,6 @@
+import type { TimeStamp, UniqueId } from "@/types";
+import { create_uid } from "@/utils/uid";
+
 import {
     InvalidAmount,
     type Transaction,
@@ -5,11 +8,7 @@ import {
     TransactionKind,
     TransactionNotFound,
 } from "../entities";
-
 import type { TransactionStorage } from "../storage";
-
-import type { TimeStamp, UniqueId } from "@/types";
-import { create_uid } from "@/utils/uid";
 
 type TransactionInput = {
     amount: number;
@@ -20,7 +19,7 @@ type TransactionInput = {
 
 type TransactionPatch = Partial<TransactionInput>;
 
-export class TransactionSummary {
+class TransactionSummary {
     constructor(
         public income = 0,
         public expense = 0,
@@ -67,7 +66,7 @@ function validateTransaction(data: TransactionInput): void {
     }
 }
 
-export class TransactionService implements TransactionServiceInterface {
+class TransactionService implements TransactionServiceInterface {
     constructor(private storage: TransactionStorage) {}
 
     public async getBalance(): Promise<number> {
@@ -159,3 +158,5 @@ export class TransactionService implements TransactionServiceInterface {
         return this.storage.delete(id);
     }
 }
+
+export { TransactionService, TransactionSummary };

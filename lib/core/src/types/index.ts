@@ -1,7 +1,9 @@
-export type UniqueId = number;
-export type TimeStamp = number;
+type UniqueId = number;
+type TimeStamp = number;
 
-export type Entity = {
+type Entity = {
     readonly id: UniqueId;
     readonly created_at: TimeStamp;
 };
+
+export type { Entity, TimeStamp, UniqueId };

@@ -5,7 +5,7 @@ import { type Transaction, TransactionKind } from "@lib/core/features/tracker";
 import { Card, CardText } from "@/components";
 import { sizes, useTheme } from "@/theme";
 
-export type TransactionRowProps = {
+type TransactionRowProps = {
     item: Transaction;
 };
 
@@ -25,7 +25,7 @@ const getAmountSign = (transaction: Transaction): AmountSignType => {
     }
 };
 
-export const TransactionCard = (props: TransactionRowProps) => {
+const TransactionCard = (props: TransactionRowProps) => {
     const { colors } = useTheme();
 
     const sign = getAmountSign(props.item);
@@ -51,3 +51,6 @@ const styles = StyleSheet.create({
         marginRight: 0,
     },
 });
+
+export { TransactionCard };
+export type { TransactionRowProps };

@@ -2,11 +2,11 @@ import { Text, type TextProps } from "react-native";
 
 import { sizes, useTheme } from "@/theme";
 
-export type TypographyProps = TextProps & {
+type TypographyProps = TextProps & {
     size?: keyof typeof sizes.typography;
 };
 
-export const Typography = (props: TypographyProps) => {
+const Typography = (props: TypographyProps) => {
     const { colors } = useTheme();
 
     return (
@@ -23,3 +23,6 @@ export const Typography = (props: TypographyProps) => {
         </Text>
     );
 };
+
+export { Typography };
+export type { TypographyProps };

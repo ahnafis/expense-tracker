@@ -5,7 +5,7 @@ import { sizes } from "@/theme";
 import { BalanceCard, TransactionList } from "../components";
 import { useTransactions } from "../providers";
 
-export const TrackerScreen = () => {
+const TrackerScreen = () => {
     const { transactions, balance } = useTransactions();
 
     return (
@@ -26,3 +26,5 @@ const styles = StyleSheet.create({
         margin: sizes.spacing.sm,
     },
 });
+
+export { TrackerScreen };

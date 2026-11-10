@@ -1,10 +1,8 @@
 import { StyleSheet } from "react-native";
-
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { TransactionProvider } from "@/features/tracker/providers";
 import { TrackerScreen } from "@/features/tracker/screens";
-
 import { sizes, ThemeProvider, useTheme } from "@/theme";
 
 const MainContent = () => {
@@ -21,7 +19,7 @@ const MainContent = () => {
     );
 };
 
-export default function App() {
+function App() {
     return (
         <SafeAreaProvider>
             <ThemeProvider>
@@ -38,3 +36,5 @@ const styles = StyleSheet.create({
         gap: sizes.spacing.lg,
     },
 });
+
+export default App;

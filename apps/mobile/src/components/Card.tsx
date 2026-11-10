@@ -6,12 +6,13 @@ import {
 } from "react-native";
 
 import { sizes, useTheme } from "@/theme";
+
 import { Typography, type TypographyProps } from "./Typography";
 
-export type CardTextProps = TypographyProps;
-export type CardProps = ViewProps;
+type CardTextProps = TypographyProps;
+type CardProps = ViewProps;
 
-export const CardText = (props: CardTextProps) => {
+const CardText = (props: CardTextProps) => {
     const { colors } = useTheme();
 
     const style: TextStyle = {
@@ -25,7 +26,7 @@ export const CardText = (props: CardTextProps) => {
     );
 };
 
-export const Card = (props: CardProps) => {
+const Card = (props: CardProps) => {
     const { colors } = useTheme();
 
     const style: ViewStyle = {
@@ -42,3 +43,6 @@ export const Card = (props: CardProps) => {
         </View>
     );
 };
+
+export { Card, CardText };
+export type { CardProps, CardTextProps };

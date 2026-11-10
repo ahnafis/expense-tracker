@@ -1,10 +1,9 @@
-import type { UniqueId } from "@/types";
-
 import {
     type Transaction,
     type TransactionFilter,
     type TransactionStorage,
 } from "@/features/tracker";
+import type { UniqueId } from "@/types";
 
 function cloneTransaction(data: Transaction): Transaction {
     return { ...data };

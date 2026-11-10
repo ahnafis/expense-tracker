@@ -1,14 +1,14 @@
 import { Pressable, type PressableProps, StyleSheet } from "react-native";
 
-import { Typography } from "./Typography";
-
 import { sizes, useTheme } from "@/theme";
+
+import { Typography } from "./Typography";
 
 type PrimaryButtonProps = PressableProps & {
     children: React.ReactNode;
 };
 
-export const Button = (props: PrimaryButtonProps) => {
+const Button = (props: PrimaryButtonProps) => {
     const { colors } = useTheme();
 
     return (
@@ -37,3 +37,5 @@ const style = StyleSheet.create({
         borderRadius: sizes.radius.md,
     },
 });
+
+export { Button };

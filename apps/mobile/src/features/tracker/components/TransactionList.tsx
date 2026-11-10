@@ -4,11 +4,11 @@ import { type Transaction } from "@lib/core/features/tracker";
 
 import { TransactionCard } from "./TransactionCard";
 
-export type TransactionListProps = {
+type TransactionListProps = {
     data: Transaction[];
 };
 
-export const TransactionList = (props: TransactionListProps) => {
+const TransactionList = (props: TransactionListProps) => {
     return (
         <FlatList
             data={props.data}
@@ -17,3 +17,6 @@ export const TransactionList = (props: TransactionListProps) => {
         />
     );
 };
+
+export { TransactionList };
+export type { TransactionListProps };

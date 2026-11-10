@@ -1,6 +1,6 @@
 import type { Entity, TimeStamp, UniqueId } from "@/types";
 
-export enum TransactionKind {
+enum TransactionKind {
     INCOME = "income",
     EXPENSE = "expense",
     LEND = "lend",
@@ -9,14 +9,14 @@ export enum TransactionKind {
     REPAY_OUT = "repay_out",
 }
 
-export type Transaction = Entity & {
+type Transaction = Entity & {
     amount: number;
     kind: TransactionKind;
     occurred_at: TimeStamp;
     note: string;
 };
 
-export type TransactionFilter = Partial<{
+type TransactionFilter = Partial<{
     id: UniqueId;
 
     kind: TransactionKind;
@@ -32,3 +32,6 @@ export type TransactionFilter = Partial<{
 
     note_query: string;
 }>;
+
+export { TransactionKind };
+export type { Transaction, TransactionFilter };

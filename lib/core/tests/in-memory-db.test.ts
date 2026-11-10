@@ -1,6 +1,7 @@
+import { beforeEach, describe, expect, test } from "vitest";
+
 import { InMemoryTransactionStorage } from "@/utils";
 
-import { beforeEach, describe, expect, test } from "vitest";
 import { MOCK_TRANSACTIONS } from "./data";
 
 describe("InMemoryTransactionStorage", () => {

@@ -1,4 +1,5 @@
 import type { UniqueId } from "@/types";
+
 import type { Transaction, TransactionFilter } from "../entities";
 
 export interface TransactionStorage {

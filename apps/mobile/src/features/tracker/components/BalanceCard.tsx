@@ -3,11 +3,11 @@ import { StyleSheet, View, type ViewProps } from "react-native";
 import { Typography } from "@/components";
 import { useTheme } from "@/theme";
 
-export type BalanceCardProps = ViewProps & {
+type BalanceCardProps = ViewProps & {
     data: number;
 };
 
-export const BalanceCard = (props: BalanceCardProps) => {
+const BalanceCard = (props: BalanceCardProps) => {
     const { colors } = useTheme();
 
     return (
@@ -28,3 +28,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
 });
+
+export { BalanceCard };
+export type { BalanceCardProps };

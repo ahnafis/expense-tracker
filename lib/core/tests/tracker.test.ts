@@ -1,13 +1,13 @@
+import { beforeEach, describe, expect, test } from "vitest";
+
 import {
     InvalidAmount,
     TransactionKind,
     TransactionNotFound,
     TransactionService,
 } from "@/features/tracker";
-
 import { InMemoryTransactionStorage } from "@/utils";
 
-import { beforeEach, describe, expect, test } from "vitest";
 import { MOCK_TRANSACTIONS } from "./data";
 
 describe("TransactionService", () => {

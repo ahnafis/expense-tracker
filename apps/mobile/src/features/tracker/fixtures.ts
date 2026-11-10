@@ -1,4 +1,4 @@
-import { TransactionKind, type Transaction } from "@lib/core/features/tracker";
+import { type Transaction, TransactionKind } from "@lib/core/features/tracker";
 
 export const mock_data: Transaction[] = [
     {
