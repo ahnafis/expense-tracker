@@ -10,7 +10,7 @@ enum TransactionKind {
 }
 
 type Transaction = Entity & {
-    amount: number;
+    amount: number; // In Paisa
     kind: TransactionKind;
     occurred_at: TimeStamp;
     note: string;

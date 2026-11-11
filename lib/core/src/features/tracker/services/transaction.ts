@@ -61,7 +61,7 @@ function getSignedAmount(transaction: Transaction): number {
 }
 
 function validateTransaction(data: TransactionInput): void {
-    if (!Number.isFinite(data.amount) || data.amount <= 0) {
+    if (!Number.isSafeInteger(data.amount) || data.amount <= 0) {
         throw new InvalidAmount("Amount must be positive");
     }
 }
