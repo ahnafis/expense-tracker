@@ -1,0 +1,80 @@
+{
+    "version": "7",
+    "dialect": "sqlite",
+    "id": "f09a1227-7d35-49f4-b58b-1e368b51a7d4",
+    "prevIds": ["00000000-0000-0000-0000-000000000000"],
+    "ddl": [
+        {
+            "name": "transactions",
+            "entityType": "tables"
+        },
+        {
+            "table": "transactions",
+            "name": "id",
+            "type": "integer",
+            "notNull": false,
+            "autoincrement": false,
+            "default": null,
+            "generated": null,
+            "entityType": "columns"
+        },
+        {
+            "table": "transactions",
+            "name": "created_at",
+            "type": "integer",
+            "notNull": true,
+            "autoincrement": false,
+            "default": null,
+            "generated": null,
+            "entityType": "columns"
+        },
+        {
+            "table": "transactions",
+            "name": "amount",
+            "type": "integer",
+            "notNull": true,
+            "autoincrement": false,
+            "default": null,
+            "generated": null,
+            "entityType": "columns"
+        },
+        {
+            "table": "transactions",
+            "name": "kind",
+            "type": "text",
+            "notNull": true,
+            "autoincrement": false,
+            "default": null,
+            "generated": null,
+            "entityType": "columns"
+        },
+        {
+            "table": "transactions",
+            "name": "occurred_at",
+            "type": "integer",
+            "notNull": true,
+            "autoincrement": false,
+            "default": null,
+            "generated": null,
+            "entityType": "columns"
+        },
+        {
+            "table": "transactions",
+            "name": "note",
+            "type": "text",
+            "notNull": true,
+            "autoincrement": false,
+            "default": null,
+            "generated": null,
+            "entityType": "columns"
+        },
+        {
+            "table": "transactions",
+            "name": "transactions_pk",
+            "columns": ["id"],
+            "nameExplicit": false,
+            "entityType": "pks"
+        }
+    ],
+    "renames": []
+}
