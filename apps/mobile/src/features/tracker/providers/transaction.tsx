@@ -10,13 +10,7 @@ import {
     type Transaction,
     TransactionService,
 } from "@lib/core/features/tracker";
-import { InMemoryTransactionStorage } from "@lib/core/utils";
-
-import { mock_data } from "../fixtures";
-
-// Core API's
-const transaction_storage = new InMemoryTransactionStorage(mock_data);
-const transaction_service = new TransactionService(transaction_storage);
+import { SQLiteStorage } from "@/database/storage";
 
 // Contexts
 type TransactionsContextValue = {
@@ -63,8 +57,12 @@ type ProviderProps = {
 };
 
 function TransactionServiceProvider({ children }: ProviderProps) {
+    const [service] = useState(
+        () => new TransactionService(new SQLiteStorage()),
+    );
+
     return (
-        <ServiceContext.Provider value={transaction_service}>
+        <ServiceContext.Provider value={service}>
             {children}
         </ServiceContext.Provider>
     );

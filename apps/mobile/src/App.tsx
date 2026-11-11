@@ -5,8 +5,21 @@ import { TransactionProvider } from "@/features/tracker/providers";
 import { TrackerScreen } from "@/features/tracker/screens";
 import { sizes, ThemeProvider, useTheme } from "@/theme";
 
+import { useMigration } from "./database/migrate";
+
 function MainContent() {
     const { colors } = useTheme();
+
+    const { is_ready, error } = useMigration();
+
+    if (!is_ready) {
+        return null;
+    }
+
+    if (error) {
+        return null;
+    }
+
     return (
         <TransactionProvider>
             <SafeAreaView
