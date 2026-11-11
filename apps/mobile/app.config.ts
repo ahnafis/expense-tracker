@@ -9,6 +9,7 @@ const config: ExpoConfig = {
     experiments: {
         tsconfigPaths: true,
     },
+    plugins: ["expo-sqlite"],
 };
 
 export default config;
